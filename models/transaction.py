@@ -5,8 +5,6 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtCore import QAbstractItemModel, QModelIndex
 import operator
 
-from functools import cached_property
-
 
 class TransactionsModel(QAbstractItemModel):
     def __init__(self, items):
@@ -110,14 +108,18 @@ class Transaction(Base):
         )
 
     @staticmethod
-    def list(session):
-        query = session.query(Transaction)
-        result = query.all()
+    def get_info_from_transaction_model(result_query):
         transactions = []
-        for item in result:
+        for item in result_query:
             transactions.append([str(item.id), f"{item.user.surname} {item.user.name}", item.type.type_name,
                                  item.category.category_name, str(item.amount)])
         return transactions
+
+    @staticmethod
+    def list(session):
+        query = session.query(Transaction)
+        result = query.all()
+        return Transaction.get_info_from_transaction_model(result)
 
     @staticmethod
     def list_item(session):

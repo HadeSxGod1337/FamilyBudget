@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, String
 from models.database import Base
-from sqlalchemy.orm import relationship
 
 
 class User(Base):
@@ -17,3 +16,19 @@ class User(Base):
 
     def __repr__(self):
         return f'<User(name="{self.name}", surname="{self.surname}, login="{self.login}")>'
+
+    @staticmethod
+    def list_name(session):
+        query = session.query(User)
+        result = query.all()
+        for item in result:
+            yield item.name
+        return
+
+    @staticmethod
+    def login_name(session):
+        query = session.query(User)
+        result = query.all()
+        for item in result:
+            yield item.login
+        return

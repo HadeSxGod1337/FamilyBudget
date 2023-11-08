@@ -20,8 +20,8 @@ if __name__ == "__main__":
     db_is_created = os.path.exists(DATABASE_NAME)
     if not db_is_created:
         db_creator.create_database()
-        print("Таблица создалась")
+        print("БД создалась")
     else:
-        print("Таблица уже создана")
+        print("БД уже создана")
     app = App(sys.argv, session=Session())
     app.exec_()

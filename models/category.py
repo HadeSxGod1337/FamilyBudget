@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, String
 from models.database import Base
-from sqlalchemy.orm import relationship
 
 
 class CategoryTransaction(Base):

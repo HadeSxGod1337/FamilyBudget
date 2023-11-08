@@ -4,6 +4,7 @@ from models.type import TypeTransaction
 from models.transaction import Transaction
 from sqlalchemy import exists, delete, update
 from sqlalchemy.dialects import sqlite
+from sqlalchemy.sql import and_
 
 
 class DataBaseController:
@@ -33,8 +34,30 @@ class DataBaseController:
 
     """get_info_from_db"""
 
-    def get_all_transaction(self):
+    def get_transactions(self):
         return Transaction.list(self.session)
+
+    def get_choose_transactions(self, login=None, type_name=None, category_name=None):
+        try:
+            user = self.get_user_by_login(login) \
+                if login in User.login_name(self.session) else None
+            category = self.get_category(category_name) \
+                if category_name in CategoryTransaction.list_name(self.session) else None
+            type = self.get_type(type_name) \
+                if type_name in TypeTransaction.list_name(self.session) else None
+            transactions = self.session.query(Transaction)
+            if user is not None:
+
+                transactions = transactions.filter(Transaction.user_id == user.id)
+            if type is not None:
+                transactions = transactions.filter(Transaction.type_transaction_id == type.id)
+            if category is not None:
+                transactions = transactions.filter(Transaction.category_transaction_id == category.id)
+
+            transactions = transactions.all()
+            return Transaction.get_info_from_transaction_model(transactions)
+        except Exception as e:
+            print("error:", e)
 
     def get_category(self, category_name):
         category = self.session.query(CategoryTransaction).filter(
@@ -84,10 +107,10 @@ class DataBaseController:
         return False
 
     @change_database
-    def add_transaction(self, login, type_id, category_id, amount):
+    def add_transaction(self, login, type_name, category_name, amount):
         user = self.get_user_by_login(login)
-        type = list(TypeTransaction.list(self.session))[type_id]
-        category = list(CategoryTransaction.list(self.session))[category_id]
+        type = self.get_type(type_name)
+        category = self.get_category(category_name)
         new_transaction = Transaction(user, type, category, amount)
         self.session.add(new_transaction)
         return True
