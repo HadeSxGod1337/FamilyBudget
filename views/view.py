@@ -12,6 +12,7 @@ def show_message(title, text):
     msg.setText(text)
     msg.setIcon(QMessageBox.Warning)
     msg.setStandardButtons(QMessageBox.Cancel)
+    msg.setWindowFlags(msg.windowFlags() | Qt.WindowStaysOnTopHint)
     msg.exec()
 
 
@@ -20,7 +21,7 @@ def show_yes_no(title, text, inf_text, func_yes):
     msg.setWindowTitle(title)
     msg.setText(text)
     msg.setInformativeText("<span style='color: red'>" + inf_text + "</span>")
-
+    msg.setWindowFlags(msg.windowFlags() | Qt.WindowStaysOnTopHint)
     msg.setIcon(QMessageBox.Warning)
     msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
     msg.buttonClicked.connect(lambda btn: func_yes(msg.standardButton(msg.clickedButton()) == QMessageBox.Yes))
@@ -33,6 +34,7 @@ class ChangeUserWindow(QDialog):
 
         self.setWindowTitle("Изменение пользователя")
         self.setMinimumSize(400, 200)
+        self.setMaximumSize(600, 300)
         self.login = QLineEdit(self)
         self.name = QLineEdit(self)
         self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)

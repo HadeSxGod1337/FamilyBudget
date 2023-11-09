@@ -118,9 +118,25 @@ class DataBaseController:
     """delete_info_from_db"""
 
     @change_database
+    def delete_category(self, category):
+        self.session.delete(category)
+
+    @change_database
+    def delete_user(self, user):
+        self.session.delete(user)
+
+    @change_database
+    def delete_type(self, type):
+        self.session.delete(type)
+
+    @change_database
     def delete_user_by_login(self, login):
         user = self.get_user_by_login(login)
-        self.session.delete(user)
+        query = delete(Transaction).where(Transaction.user_id == user.id)
+        query.compile(dialect=sqlite.dialect())
+        self.session.execute(query)
+        self.delete_user(user)
+
 
     @change_database
     def delete_category_by_category_name(self, category_name):
@@ -131,10 +147,6 @@ class DataBaseController:
         self.delete_category(category)
 
     @change_database
-    def delete_category(self, category):
-        self.session.delete(category)
-
-    @change_database
     def delete_type_by_type_name(self, type_name):
         type = self.get_type(type_name)
         query = delete(Transaction).where(Transaction.type_transaction_id == type.id)
@@ -142,6 +154,3 @@ class DataBaseController:
         self.session.execute(query)
         self.delete_type(type)
 
-    @change_database
-    def delete_type(self, type):
-        self.session.delete(type)

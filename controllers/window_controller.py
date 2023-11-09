@@ -44,6 +44,10 @@ class WindowController:
                                                                  "Вы также удалите все транзакции с этим типом!",
                                                                  self.delete_type)
         if self.main.types.currentText() else None)
+        self.change.delete_user.clicked.connect(lambda: show_yes_no("Удаление пользователя",
+                                                                 "Вы точно хотите удалить данного пользователя?",
+                                                                 "Вы также удалите все транзакции с этим типом!",
+                                                                 self.delete_user))
 
 
         self.main.categories.addItems(CategoryTransaction.list_name(self.db_controller.session))
@@ -104,6 +108,12 @@ class WindowController:
         self.main.categories.clear()
         self.main.categories.addItems(CategoryTransaction.list_name(self.db_controller.session))
 
+    def delete_user(self, can_delete):
+        if can_delete:
+            self.db_controller.delete_user_by_login(self.info.login)
+            self.info.login, self.info.name, self.info.surname = None, None, None
+            self.main_to_login()
+
     def delete_type(self, can_delete):
         if can_delete:
             self.db_controller.delete_type_by_type_name(self.main.types.currentText())
@@ -128,6 +138,11 @@ class WindowController:
         self.main.show()
         self.reg.hide()
 
+    def main_to_login(self):
+        self.login.show()
+        self.main.hide()
+        self.change.hide()
+
     def open_update(self):
         self.change.set_info(self.info.name, self.info.surname, self.info.login)
         self.change.show()
@@ -135,6 +150,7 @@ class WindowController:
     def log_in(self):
         user: User = self.db_controller.get_user_by_login(self.login.login.text())
         if user is not None:
+            self.login.login.setText("")
             self.change_user(user.name, user.surname, user.login)
             self.login_to_main()
         else:
